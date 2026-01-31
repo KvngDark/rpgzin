@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa de Segurança - Brasil</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+
+        .header {
+            background: linear-gradient(to right, #1a3a8f, #2d5cc2);
+            color: white;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-section img {
+            height: 60px;
+        }
+
+        .logo-text h1 {
+            font-size: 1.8rem;
+            margin-bottom: 0.2rem;
+            font-weight: 600;
+        }
+
+        .logo-text p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1.2rem;
+            background-color: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            gap: 2rem;
+        }
+
+        .map-section {
+            flex: 1;
+            min-width: 400px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+        }
+
+        .map-title {
+            font-size: 1.4rem;
+            color: #1a3a8f;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid #eaeaea;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .map-title i {
+            color: #2d5cc2;
+        }
+
+        #brazilMap {
+            width: 100%;
+            height: auto;
+            max-height: 600px;
+            border-radius: 4px;
+        }
+
+        .info-section {
+            flex: 1;
+            min-width: 400px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-header {
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+        .info-title {
+            font-size: 1.4rem;
+            color: #1a3a8f;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-subtitle {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .state-info {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .state-info-content {
+            padding: 0.5rem 0;
+        }
+
+        .no-selection {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #888;
+        }
+
+        .no-selection i {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            color: #ccc;
+        }
+
+        .state-name {
+            font-size: 1.8rem;
+            color: #1a3a8f;
+            margin-bottom: 0.5rem;
+        }
+
+        .state-population {
+            color: #666;
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .state-population i {
+            color: #2d5cc2;
+        }
+
+        .info-box {
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            padding: 1.2rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #2d5cc2;
+        }
+
+        .info-box-title {
+            font-size: 1.1rem;
+            color: #333;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .info-box-title i {
+            color: #2d5cc2;
+        }
+
+        .info-box-content {
+            color: #555;
+            line-height: 1.7;
+        }
+
+        .safety-level {
+            display: inline-block;
+            padding: 0.3rem 0.8rem;
+            background-color: #e8f4ff;
+            color: #2d5cc2;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-top: 0.8rem;
+        }
+
+        .footer {
+            background-color: #f0f3f7;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid #ddd;
+        }
+
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .footer-logo img {
+            height: 50px;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-links a {
+            color: #1a3a8f;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .footer-disclaimer {
+            color: #666;
+            font-size: 0.85rem;
+            width: 100%;
+            text-align: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #ddd;
+        }
+
+        .alert-banner {
+            background-color: #fff8e1;
+            border-left: 5px solid #ffc107;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            border-radius: 4px;
+        }
+
+        .alert-banner i {
+            color: #ff9800;
+            font-size: 1.5rem;
+        }
+
+        .alert-content h4 {
+            color: #ff9800;
+            margin-bottom: 0.3rem;
+        }
+
+        .alert-content p {
+            color: #666;
+            font-size: 0.95rem;
+        }
+
+        .search-box {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.8rem 1rem 0.8rem 2.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #888;
+        }
+
+        .state-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 0.8rem;
+            margin-top: 1.5rem;
+        }
+
+        .state-item {
+            padding: 0.8rem;
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-left: 3px solid #2d5cc2;
+        }
+
+        .state-item:hover {
+            background-color: #e8f4ff;
+            transform: translateY(-2px);
+        }
+
+        .state-item-name {
+            font-weight: 600;
+            color: #1a3a8f;
+            margin-bottom: 0.3rem;
+        }
+
+        .state-item-pop {
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        @media (max-width: 1024px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .map-section, .info-section {
+                min-width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .footer-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .state-list {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+
+        /* Estilo para o mapa */
+        .state-path {
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .state-path:hover {
+            opacity: 0.8;
+        }
+
+        .selected-state {
+            filter: brightness(0.9);
+            stroke: #1a3a8f;
+            stroke-width: 2;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-text">
+                    <h1>Mapa de Segurança - Brasil</h1>
+                    <p>Governo Federal - Departamento de Segurança Pública</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn"><i class="fas fa-question-circle"></i> Ajuda</button>
+                <button class="btn"><i class="fas fa-phone-alt"></i> Emergência</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert-banner">
+        <i class="fas fa-exclamation-triangle"></i>
+        <div class="alert-content">
+            <h4>Informação Importante</h4>
+            <p>Este mapa foi desenvolvido para auxiliar cidadãos a identificar áreas seguras. O número da população atual pode conter com erros. Consulte regularmente para informações atualizadas sobre segurança.</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="map-section">
+            <div class="map-title">
+                <i class="fas fa-map"></i>
+                Mapa Interativo do Brasil
+            </div>
+            <div id="brazilMap"></div>
+            
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchState" placeholder="Buscar estado...">
+            </div>
+            
+            <div>
+                <h3 style="color: #1a3a8f; margin-bottom: 1rem;">Lista de Estados</h3>
+                <div class="state-list" id="stateList">
+                    <!-- Estados serão inseridos via JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="info-header">
+                <h2 class="info-title">Informações do Estado</h2>
+                <p class="info-subtitle">Selecione um estado no mapa ou na lista para visualizar detalhes sobre segurança do local</p>
+            </div>
+            
+            <div class="state-info">
+                <div class="state-info-content" id="stateInfo">
+                    <div class="no-selection">
+                        <i class="fas fa-mouse-pointer"></i>
+                        <h3>Nenhum estado selecionado</h3>
+                        <p>Clique em um estado no mapa ou na lista ao lado para visualizar informações detalhadas sobre segurança no local, grupos dominantes e recomendações para cidadãos.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="info-box" style="margin-top: auto;">
+                <div class="info-box-title">
+                    <i class="fas fa-info-circle"></i>
+                    Sobre este sistema
+                </div>
+                <div class="info-box-content">
+                    <p>Este mapa foi desenvolvido pelo Governo Federal em parceria com agências de segurança para fornecer informações atualizadas sobre a situação em todo o território nacional. Os dados são atualizados diariamente com base em relatórios.</p>
+                    <div class="safety-level">Sistema Oficial - Nível de Segurança 3</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <div class="logo-placeholder">
+                    <i class="fas fa-shield-alt" style="font-size: 2rem; color: #1a3a8f;"></i>
+                </div>
+                <div>
+                    <h3 style="color: #1a3a8f;">Governo do Brasil</h3>
+                    <p style="color: #666; font-size: 0.9rem;">Departamento de Segurança Pública</p>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <a href="#"><i class="fas fa-file-alt"></i> Relatórios Oficiais</a>
+                <a href="#"><i class="fas fa-phone-alt"></i> Contato</a>
+                <a href="#"><i class="fas fa-question-circle"></i> FAQ</a>
+                <a href="#"><i class="fas fa-user-shield"></i> Privacidade</a>
+            </div>
+            
+            <div class="footer-disclaimer">
+                <p>© 2023 Governo do Brasil. Todos os direitos reservados. Este é um sistema oficial do governo para auxílio à população durante eventos anormais excepcionais.</p>
+                <p>Em caso de emergência, ligue para o número nacional de emergência: <strong>190</strong> ou para a linha direta da organização não governamental: <strong>0800-555-0412</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="https://cdn.jsdelivr.net/npm/brazil-map/dist/brazil-map.umd.min.js"></script>
+    <script>
+        // Dados dos estados
+        const estadosData = {
+            'AC': {
+                name: 'Acre',
+                pop: '~906.880',
+                status: 'A floresta está mais densa que o normal, com atividade estranhas constantemente.',
+                groups: 'Dominado por um grupo demonidado de "Guepardos", o grupo parece sempre estar obsevando os cidadãos da área, mesmo em ambientes florestais.',
+                safety: 'Média',
+                recommendation: 'Evite áreas de floresta densa durante a noite. Comunidades locais tem sido atacadas todas as noites.'
+            },
+            'AL': {
+                name: 'Alagoas',
+                pop: '~3.365.350',
+                status: 'Costas agitadas, o mar tem subido mais que o normal. Animais marinhos tem tido comportamentos anormais',
+                groups: 'A parte norte do estado é dominada pelos "Tubarões", um grupo de ex marinheiros e pescadores, já a parte sul é comandada pelos "Artilheiros", um grupo de ex-militares que a força tomaram o sul do estado. Ambas os grupos estão em constante guerra',
+                safety: 'Baixa',
+                recommendation: 'Evite praias isoladas após o pôr do sol. Centros urbanos possuem maior segurança, mas tome cuidado com a guerra.'
+            },
+            'AP': {
+                name: 'Amapá',
+                pop: '~877.610',
+                status: 'Isolado. Pouco se sabe da situação',
+                groups: 'Sabe-se que a população se uniu para cuidar do estado, mas a entrada de pessoas de fora está bem restrita',
+                safety: 'Média',
+                recommendation: 'Viaje apenas em grupos autorizados. Respeite os locais e tome cuidado, não sabemos se está de fato pacífico.'
+            },
+            'AM': {
+                name: 'Amazonas',
+                pop: '~4.270.000',
+                status: 'Alta atividade na selva, com expedições desaparecendo.',
+                groups: 'Há inumeros grupos neste estado, principalmente indígenas que dizem que estamos passando por um tipo de purificação.',
+                safety: 'Baixa',
+                recommendation: 'Não entre nas floresta sem guias autorizados. Manaus possui zonas seguras bem definidas.'
+            },
+            'BA': {
+                name: 'Bahia',
+                pop: '~14.985.280',
+                status: 'O estado está em boas condições, porém seu litoral e grande parte do interior estão em alerta.',
+                groups: 'Dominado por um grupo de Místicos do Candomblé em Salvador e arredores. Há poucos casos de que esses grupos afetam pessoas',
+                safety: 'Média',
+                recommendation: 'Evite cemitérios e áreas que possam ter tido ataques de criaturas.'
+            },
+            'CE': {
+                name: 'Ceará',
+                pop: '~9.240.580',
+                status: 'O lugar está bem seco, o sol quase não desaparece.',
+                groups: 'Há um grupo de cangaceiros na região, eles não parecem se preocupar com pessoas. Mas também não as protegem a todo tempo.',
+                safety: 'Média',
+                recommendation: 'Em áreas rurais, busque abrigo antes do anoitecer. Fortaleza possui postos de segurança.'
+            },
+            'DF': {
+                name: 'Distrito Federal',
+                pop: '~3.094.330',
+                status: 'Não há grupos nesta região apenas a sede.',
+                groups: 'O governo está neste lugar, a entrada só é permitida para cidadãos brasileiros e mediante a comprovação',
+                safety: 'Alta',
+                recommendation: 'Brasília possui sistema de monitoramento avançado. Evite áreas governamentais restritas.'
+            },
+            'ES': {
+                name: 'Espírito Santo',
+                pop: '~4.108.510',
+                status: 'Áreas litoranêas devem ser eviatadas. Os centros urbanos também tem sido grande alvo de grupos internos',
+                groups: 'Há um grupo chamado por civis de "Vampiros", o grupo aparentemente recebe oferandas humanas de locais em troca de proteção dos mesmo, há inumeros "Condes" no estado e na capital, Vitória, o seu Senhor se mantém.',
+                safety: 'Baixa',
+                recommendation: 'Evite praias desertas à noite. Vitória possui patrulhas costeiras especiais.'
+            },
+            'GO': {
+                name: 'Goiás',
+                pop: '~7.206.590',
+                status: 'Planícies vastas com matilhas errantes.',
+                groups: 'Não há informações sobre grupos na região, porém sabe-se que no interior os animais locais tem tido comportamentos estranhos.',
+                safety: 'Média',
+                recommendation: 'Em áreas rurais, evite as noites. Goiânia possui abrigos certificados.'
+            },
+            'MA': {
+                name: 'Maranhão',
+                pop: '~7.153.260',
+                status: 'Florestas e Prais devem ser evitadas.',
+                groups: 'Inúmeros grupos em São Luís; interior fragmentado.',
+                safety: 'Baixa',
+                recommendation: 'São Luís possui zonas de segurança. Evite áreas históricas à noite sem guia.'
+            },
+            'MT': {
+                name: 'Mato Grosso',
+                pop: '~3.567.230',
+                status: 'Estranhamente pacífico.',
+                groups: 'Não há grupos na região porém há relatos que os locais tem tido mudanças físicas radicais.',
+                safety: 'Baixa',
+                recommendation: 'Por falta de energia e comunicação com a região não podemos afirmar nada, tudo o que sabemos são realtos de andarilhos.'
+            },
+            'MS': {
+                name: 'Mato Grosso do Sul',
+                pop: '~2.839.190',
+                status: 'Pantanal inundado, grupos extrativistas estão sendo dizimados por algo.',
+                groups: 'Há um grupo de Pantaneiros que está sobre a região, muitas populações extrativistas estão sendo devastadas.',
+                safety: 'Média',
+                recommendation: 'Evite áreas alagadas. Campo Grande possui sistema de alerta antecipado.'
+            },
+            'MG': {
+                name: 'Minas Gerais',
+                pop: '~21.411.920',
+                status: 'Locais históricos tendo sido alvos de alguns grupos.',
+                groups: 'Um grupo denomidado de "O Olho", está domindando grande parte da região. Também há na região um grupo de soldados que procuram sobreviventes',
+                safety: 'Média',
+                recommendation: 'Belo Horizonte é relativamente segura. Evite minas abandonadas e casarões antigos.'
+            },
+            'PA': {
+                name: 'Pará',
+                pop: '~8.777.120',
+                status: 'Floresta absurdamente densa.',
+                groups: 'Tribos Amazônicas tem donimado grande parte do estado, afirmando que a purificação está ocorrendo e que irão ajudar "eles".',
+                safety: 'Baixa',
+                recommendation: 'Belém possui pequenas zonas seguras demarcadas. Cudidado territórios tribais, não aceite NADA deles'
+            },
+            'PB': {
+                name: 'Paraíba',
+                pop: '~4.059.910',
+                status: 'Sertão com caçadores ativos.',
+                groups: 'Caçadores do Sertão em João Pessoa; grupos menores no interior.',
+                safety: 'Média',
+                recommendation: 'João Pessoa possui vigilância costeira. Em áreas rurais, viaje apenas durante o dia.'
+            },
+            'PR': {
+                name: 'Paraná',
+                pop: '~11.597.480',
+                status: 'Florestas temperadas com influências europeias.',
+                groups: 'Uma pequena parte da população diz que há um grupo de lobisomens no local, não se ha informações sobre a veracidade desta afirmação.',
+                safety: 'Alta',
+                recommendation: 'Curitiba possui sistema de segurança avançado. Evite parques florestais à noite.'
+            },
+            'PE': {
+                name: 'Pernambuco',
+                pop: '~9.674.790',
+                status: 'Área costeira irregular, inúmeros casos de pessoas sendo sacrificadas.',
+                groups: 'Há um grupo denomidado de "Transtornados" que andam pela região de Recife, no interior há uma grande movimentação de cangaceiros.',
+                safety: 'Baixa',
+                recommendation: 'Recife não possui zonas seguras, os Transtornados não parecem pacíficos. Evite andar pela região sozinho.'
+            },
+            'PI': {
+                name: 'Piauí',
+                pop: '~3.289.290',
+                status: 'Estupidamente Árido, não recomendado andar sem água ou fonte de refrigeração.',
+                groups: 'Não há grandes grupos na região.',
+                safety: 'Média',
+                recommendation: 'Teresina possui proteções. Em áreas rurais, evite locais de mata fechada ou muito próximo a mata.'
+            },
+            'RJ': {
+                name: 'Rio de Janeiro',
+                pop: '~17.463.350',
+                status: 'Caos urbano com as facções se difundindo .',
+                groups: 'Facções tem ficado cada vez mais fortes e mais presentes em todo o estado.',
+                safety: 'Baixa',
+                recommendation: 'Zonas Sul e Centro do Rio possuem maior segurança. Evite áreas de risco demarcadas.'
+            },
+            'RN': {
+                name: 'Rio Grande do Norte',
+                pop: '~3.560.900',
+                status: 'Costas etranhamente agitadas e calor absurdo.',
+                groups: 'Grupos de cidadão tem se juntados para melhorar a região.',
+                safety: 'Alta',
+                recommendation: 'Natal possui vigilância costeira 24h. Evite praias desertas após o pôr do sol.'
+            },
+            'RS': {
+                name: 'Rio Grande do Sul',
+                pop: '~11.466.630',
+                status: 'Pampas com matilhas gaúchas.',
+                groups: 'Lobisomens dominam Porto Alegre e o sul.',
+                safety: 'Alta',
+                recommendation: 'Porto Alegre possui sistema de alerta para noites de lua cheia. Zonas rurais requerem cuidado.'
+            },
+            'RO': {
+                name: 'Rondônia',
+                pop: '~1.815.280',
+                status: 'Fronteira selvagem com bestas.',
+                groups: 'Bestas da Selva em Porto Velho.',
+                safety: 'Baixa',
+                recommendation: 'Porto Velho possui zonas seguras limitadas. Evite áreas de floresta densa.'
+            },
+            'RR': {
+                name: 'Roraima',
+                pop: '~652.710',
+                status: 'Montanhas isoladas com atividades anormais.',
+                groups: 'criaturas controlam Boa Vista.',
+                safety: 'Baixa',
+                recommendation: 'Boa Vista possui áreas de proteções. Respeite áreas montanhosas sagradas.'
+            },
+            'SC': {
+                name: 'Santa Catarina',
+                pop: '~7.338.470',
+                status: 'Um grupo de "bruxos" locais comanda a região central e parte do interior.',
+                groups: 'bruxos em Florianópolis e interior.',
+                safety: 'Alta',
+                recommendation: 'Florianópolis possui sistema de segurança eficiente. Evite áreas rurais isoladas. Não sabemos muitos sobre os denomidados "bruxos"'
+            },
+            'SP': {
+                name: 'São Paulo',
+                pop: '~46.649.130',
+                status: 'Megacidade com alta atividade anormal em todos os níveis.',
+                groups: 'Há uma briga constante de grupos destintos, porém há uma organização não governamental que tem controlado o caos na área',
+                safety: 'Alta',
+                recommendation: 'São Paulo possui o maior sistema de segurança do país. O "Santuário" na Liberdade oferece proteção completa.'
+            },
+            'SE': {
+                name: 'Sergipe',
+                pop: '~2.338.470',
+                status: 'Pequeno mas denso com misturas.',
+                groups: 'Grupos mistos em Aracaju; sem domínio único.',
+                safety: 'Média',
+                recommendation: 'Aracaju possui vigilância constante. Evite conflitos entre facções.'
+            },
+            'TO': {
+                name: 'Tocantins',
+                pop: '~1.607.360',
+                status: 'Emergente com grupos novos se formando.',
+                groups: 'Grupos Emergentes em Palmas; dividido.',
+                safety: 'Média',
+                recommendation: 'Palmas possui zonas seguras em desenvolvimento. Evite áreas de conflito entre grupos.'
+            }
+        };
+
+        // Inicializar o mapa
+        document.addEventListener('DOMContentLoaded', function() {
+            const mapElement = document.getElementById('brazilMap');
+            const stateInfoElement = document.getElementById('stateInfo');
+            const stateListElement = document.getElementById('stateList');
+            const searchInput = document.getElementById('searchState');
+            
+            // Criar mapa
+            const brazilMap = document.createElement('brazil-component');
+            mapElement.appendChild(brazilMap);
+            
+            // Criar lista de estados
+            function createStateList() {
+                stateListElement.innerHTML = '';
+                Object.keys(estadosData).forEach(stateCode => {
+                    const stateData = estadosData[stateCode];
+                    const stateItem = document.createElement('div');
+                    stateItem.className = 'state-item';
+                    stateItem.innerHTML = `
+                        <div class="state-item-name">${stateData.name}</div>
+                        <div class="state-item-pop">População: ${stateData.pop}</div>
+                    `;
+                    stateItem.addEventListener('click', () => {
+                        showStateInfo(stateCode);
+                        highlightStateOnMap(stateCode);
+                    });
+                    stateListElement.appendChild(stateItem);
+                });
+            }
+            
+            // Função para mostrar informações do estado
+            function showStateInfo(stateCode) {
+                const stateData = estadosData[stateCode];
+                if (!stateData) return;
+                
+                // Determinar cor de segurança
+                let safetyColor = '#4caf50'; // Verde para alta
+                if (stateData.safety === 'Média') safetyColor = '#ff9800'; // Laranja
+                if (stateData.safety === 'Baixa') safetyColor = '#f44336'; // Vermelho
+                
+                stateInfoElement.innerHTML = `
+                    <h2 class="state-name">${stateData.name}</h2>
+                    <div class="state-population">
+                        <i class="fas fa-users"></i>
+                        População aproximada: ${stateData.pop}
+                    </div>
+                    
+                    <div class="info-box">
+                        <div class="info-box-title">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            Status Atual de Segurança
+                        </div>
+                        <div class="info-box-content">
+                            <p>${stateData.status}</p>
+                            <div class="safety-level" style="background-color: ${safetyColor}20; color: ${safetyColor}; border: 1px solid ${safetyColor}50;">
+                                Nível de Segurança: ${stateData.safety}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="info-box">
+                        <div class="info-box-title">
+                            <i class="fas fa-users-cog"></i>
+                            Grupos Dominantes
+                        </div>
+                        <div class="info-box-content">
+                            <p>${stateData.groups}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="info-box">
+                        <div class="info-box-title">
+                            <i class="fas fa-shield-alt"></i>
+                            Recomendações do Governo
+                        </div>
+                        <div class="info-box-content">
+                            <p>${stateData.recommendation}</p>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Função para destacar estado no mapa
+            function highlightStateOnMap(stateCode) {
+                // Remover destaque anterior
+                const previousSelected = document.querySelector('.selected-state');
+                if (previousSelected) {
+                    previousSelected.classList.remove('selected-state');
+                }
+                
+                // Adicionar destaque ao novo estado
+                const stateElement = document.querySelector(`[data-state="${stateCode}"]`);
+                if (stateElement) {
+                    stateElement.classList.add('selected-state');
+                }
+            }
+            
+            // Evento de clique no mapa
+            brazilMap.addEventListener('onStateSelected', (event) => {
+                const stateCode = event.detail;
+                showStateInfo(stateCode);
+                highlightStateOnMap(stateCode);
+            });
+            
+            // Busca de estados
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                const stateItems = stateListElement.querySelectorAll('.state-item');
+                
+                stateItems.forEach(item => {
+                    const stateName = item.querySelector('.state-item-name').textContent.toLowerCase();
+                    if (stateName.includes(searchTerm)) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+            
+            // Inicializar lista de estados
+            createStateList();
+            
+            // Mostrar São Paulo por padrão (o estado mais seguro)
+            showStateInfo('SP');
+            setTimeout(() => {
+                highlightStateOnMap('SP');
+            }, 500);
+        });
+    </script>
+</body>
+</html>
